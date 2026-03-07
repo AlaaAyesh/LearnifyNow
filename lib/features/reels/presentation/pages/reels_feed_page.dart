@@ -445,14 +445,11 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (mounted) {
                     setState(() {
-                      if (_currentIndex >= state.reels.length) {
-                        _currentIndex = 0;
-                      }
+                      _currentIndex = 0;
+                      _playbackIndex = 0;
                     });
                     if (_pageController.hasClients) {
-                      if (_currentIndex != 0) {
-                        _pageController.jumpToPage(0);
-                      }
+                      _pageController.jumpToPage(0);
                     }
                   }
                 });
@@ -696,6 +693,7 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
                   _lastFilteredCategoryId = null;
                   _shouldResetOnNextLoad = false;
                   _currentIndex = 0;
+                  _playbackIndex = 0;
                 });
 
                 if (_pageController.hasClients) {
@@ -730,6 +728,7 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
                   _lastFilteredCategoryId = category.id;
                   _shouldResetOnNextLoad = false;
                   _currentIndex = 0;
+                  _playbackIndex = 0;
                 });
 
                 if (_pageController.hasClients) {
@@ -832,7 +831,32 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
       allowImplicitScrolling: true,
       itemCount: itemCount,
       onPageChanged: (index) {
-        setState(() => _currentIndex = index);
+        setState(() {
+          _currentIndex = index;
+
+          // في وضع الكل (بدون اختيار كاتيجوري) ما نغيّرش التاب تلقائيًا
+          if (_selectedCategoryIndex >= 0 &&
+              !widget.hideCategoryFilters &&
+              widget.initialReel == null &&
+              _categories.isNotEmpty &&
+              index >= 0 &&
+              index < state.reels.length) {
+            final reel = state.reels[index];
+            if (reel.categories.isNotEmpty) {
+              final reelCategoryIds =
+                  reel.categories.map((c) => c.id).toSet();
+              final newCategoryIndex = _categories.indexWhere(
+                (c) => reelCategoryIds.contains(c.id),
+              );
+              if (newCategoryIndex != -1 &&
+                  newCategoryIndex != _selectedCategoryIndex) {
+                _selectedCategoryIndex = newCategoryIndex;
+                _activeCategoryId = _categories[newCategoryIndex].id;
+                _lastFilteredCategoryId = _activeCategoryId;
+              }
+            }
+          }
+        });
         _pageChangeDebounce?.cancel();
         _pageChangeDebounce = Timer(const Duration(milliseconds: 200), () {
           if (!mounted) return;
@@ -971,6 +995,11 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
 
   int? _getNextCategoryIndex() {
     if (widget.hideCategoryFilters || widget.initialReel != null) {
+      return null;
+    }
+
+    // في حالة عدم اختيار أي كاتيجوري، لا ننتقل تلقائيًا بين الكاتيجوريز
+    if (_selectedCategoryIndex < 0) {
       return null;
     }
 

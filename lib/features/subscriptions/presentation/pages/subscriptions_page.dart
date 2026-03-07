@@ -465,57 +465,87 @@ class _SubscriptionsPageContentState extends State<_SubscriptionsPageContent> wi
                   ),
                 ),
                 SizedBox(height: Responsive.spacing(context, 24)),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(false),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: Responsive.spacing(context, 12),
-                          ),
-                          side: BorderSide(color: AppColors.greyLight),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              Responsive.radius(context, 28),
-                            ),
+                LayoutBuilder(
+                  builder: (buttonsContext, constraints) {
+                    final isNarrow = constraints.maxWidth < 320;
+
+                    Widget cancelButton = OutlinedButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Responsive.spacing(context, 12),
+                        ),
+                        side: BorderSide(color: AppColors.greyLight),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            Responsive.radius(context, 28),
                           ),
                         ),
-                        child: Text(
-                          'إلغاء',
-                          style: TextStyle(
-                            fontFamily: 'Cairo',
-                            color: AppColors.textSecondary,
-                          ),
+                        minimumSize: Size(
+                          double.infinity,
+                          Responsive.height(context, 44),
                         ),
                       ),
-                    ),
-                    SizedBox(width: Responsive.spacing(context, 12)),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.of(dialogContext).pop(true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: EdgeInsets.symmetric(
-                            vertical: Responsive.spacing(context, 12),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              Responsive.radius(context, 28),
-                            ),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'تسجيل الدخول',
-                          style: TextStyle(
-                            fontFamily: 'Cairo',
-                            color: Colors.white,
-                          ),
+                      child: Text(
+                        'إلغاء',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          color: AppColors.textSecondary,
                         ),
                       ),
-                    ),
-                  ],
+                    );
+
+                    Widget loginButton = ElevatedButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: EdgeInsets.symmetric(
+                          vertical: Responsive.spacing(context, 12),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            Responsive.radius(context, 28),
+                          ),
+                        ),
+                        elevation: 0,
+                        minimumSize: Size(
+                          double.infinity,
+                          Responsive.height(context, 44),
+                        ),
+                      ),
+                      child: const Text(
+                        'تسجيل الدخول',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+
+                    if (isNarrow) {
+                      return Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: cancelButton,
+                          ),
+                          SizedBox(height: Responsive.spacing(context, 12)),
+                          SizedBox(
+                            width: double.infinity,
+                            child: loginButton,
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(child: cancelButton),
+                        SizedBox(width: Responsive.spacing(context, 12)),
+                        Expanded(child: loginButton),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
