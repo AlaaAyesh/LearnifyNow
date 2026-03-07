@@ -1022,7 +1022,6 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
     final nextCategoryIndex = _getNextCategoryIndex();
     if (nextCategoryIndex == null) return;
     final nextCategory = _categories[nextCategoryIndex];
-    setState(() => _selectedCategoryIndex = nextCategoryIndex);
     try {
       context
           .read<ReelsBloc>()
