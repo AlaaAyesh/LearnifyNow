@@ -1,5 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import '../../../../core/utils/debouncer.dart';
+import '../../../../core/events/global_event_bus.dart';
+import '../../../../core/events/subscription_updated_event.dart';
 import '../../domain/usecases/get_course_by_id_usecase.dart';
 import '../../domain/usecases/get_courses_usecase.dart';
 import '../../domain/usecases/get_my_courses_usecase.dart';
@@ -10,6 +14,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   final GetCoursesUseCase getCoursesUseCase;
   final GetCourseByIdUseCase getCourseByIdUseCase;
   final GetMyCoursesUseCase getMyCoursesUseCase;
+  final GlobalEventBus globalEventBus;
 
   int? _currentCategoryId;
   int? _currentSpecialtyId;
@@ -17,11 +22,13 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   static const int _perPage = 10;
 
   final Debouncer _filterDebouncer = Debouncer(delay: const Duration(milliseconds: 300));
+  StreamSubscription<SubscriptionUpdatedEvent>? _subscriptionUpdatedListener;
 
   CoursesBloc({
     required this.getCoursesUseCase,
     required this.getCourseByIdUseCase,
     required this.getMyCoursesUseCase,
+    required this.globalEventBus,
   }) : super(CoursesInitial()) {
     on<LoadCoursesEvent>(_onLoadCourses);
     on<LoadMoreCoursesEvent>(_onLoadMoreCourses);
@@ -31,6 +38,15 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     on<FilterBySpecialtyEvent>(_onFilterBySpecialty);
     on<ClearFiltersEvent>(_onClearFilters);
     on<ClearCoursesStateEvent>(_onClearState);
+
+    _subscriptionUpdatedListener = globalEventBus
+        .on<SubscriptionUpdatedEvent>()
+        .listen((_) {
+      // Force refresh from first page to avoid stale access flags.
+      _currentPage = 1;
+      debugPrint('🔥 SubscriptionUpdatedEvent received in CoursesBloc');
+      add(const LoadCoursesEvent(page: 1, refresh: true));
+    });
   }
 
   Future<void> _onLoadCourses(
@@ -170,6 +186,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   
   @override
   Future<void> close() {
+    _subscriptionUpdatedListener?.cancel();
     _filterDebouncer.dispose();
     return super.close();
   }

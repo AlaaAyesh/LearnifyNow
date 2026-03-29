@@ -285,10 +285,11 @@ class _ReelsFeedPageState extends State<ReelsFeedPage>
 
   Future<void> _checkSubscriptionStatus() async {
     final authLocalDataSource = sl<AuthLocalDataSource>();
-    final token = await authLocalDataSource.getAccessToken();
+    final user = await authLocalDataSource.getCachedUser();
 
     setState(() {
-      _isSubscribed = token != null && token.isNotEmpty;
+      // Defensive fallback: subscription is not equivalent to authentication.
+      _isSubscribed = user?.isSubscribed == true;
     });
   }
 

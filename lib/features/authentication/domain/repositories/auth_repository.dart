@@ -45,6 +45,8 @@ abstract class AuthRepository {
   });
 
   Future<Either<Failure, User?>> getCurrentUser();
+  Future<Either<Failure, User>> getCurrentUserFromApi();
+  Future<Either<Failure, User>> getCurrentUserWithRetry();
 
   Future<Either<Failure, bool>> isLoggedIn();
 

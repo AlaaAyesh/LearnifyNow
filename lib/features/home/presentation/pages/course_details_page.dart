@@ -49,6 +49,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> with RouteAware {
   SubscriptionBloc? _subscriptionBloc;
   CertificateBloc? _certificateBloc;
   bool _isAuthenticated = false;
+  bool _isSubscribedUser = false;
   bool _isCheckingAuth = true;
   bool _hasAttemptedCertificateGeneration = false;
   bool _hasCheckedInitialCertificate = false;
@@ -111,8 +112,10 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> with RouteAware {
   Future<void> _checkAuthentication() async {
     final authLocalDataSource = sl<AuthLocalDataSource>();
     final token = await authLocalDataSource.getAccessToken();
+    final user = await authLocalDataSource.getCachedUser();
     setState(() {
       _isAuthenticated = token != null && token.isNotEmpty;
+      _isSubscribedUser = user?.isSubscribed == true;
       _isCheckingAuth = false;
     });
   }
@@ -1288,7 +1291,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> with RouteAware {
 
     final hasFullAccess = _isFreeCourse
         ? (_hasAccess || _isAuthenticated)
-        : _hasAccess;
+        : (_hasAccess || _isSubscribedUser);
     
     if (hasFullAccess) {
       final result = await Navigator.of(context, rootNavigator: true).push(
@@ -1368,7 +1371,7 @@ class _CourseDetailsPageState extends State<CourseDetailsPage> with RouteAware {
   void _onEnrollPressed(BuildContext context) async {
     final hasFullAccess = _isFreeCourse
         ? (_hasAccess || _isAuthenticated)
-        : _hasAccess;
+        : (_hasAccess || _isSubscribedUser);
     
     if (hasFullAccess) {
       if (course.chapters.isNotEmpty &&

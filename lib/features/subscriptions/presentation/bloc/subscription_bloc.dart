@@ -11,6 +11,8 @@ import '../../domain/usecases/get_subscriptions_usecase.dart';
 import '../../domain/usecases/update_subscription_usecase.dart';
 import '../../../../core/services/google_play_billing_service.dart';
 import '../../../../core/services/apple_iap_service.dart';
+import '../../../../core/events/global_event_bus.dart';
+import '../../../../core/events/subscription_updated_event.dart';
 import 'subscription_event.dart';
 import 'subscription_state.dart';
 import '../../domain/usecases/verify_iap_receipt_usecase.dart';
@@ -22,6 +24,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
   final UpdateSubscriptionUseCase updateSubscriptionUseCase;
   final SubscriptionRepository subscriptionRepository;
   final VerifyIapReceiptUseCase verifyIapReceiptUseCase;
+  final GlobalEventBus globalEventBus;
 
   late final GooglePlayBillingService _billingService;
   late final AppleIAPService _appleIapService;
@@ -37,6 +40,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
     required this.updateSubscriptionUseCase,
     required this.subscriptionRepository,
     required this.verifyIapReceiptUseCase,
+    required this.globalEventBus,
   }) : super(SubscriptionInitial()) {
     _billingService = GooglePlayBillingService();
     _appleIapService = AppleIAPService();
@@ -199,6 +203,8 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
           purchase: null,
           message: 'تم تفعيل اشتراكك بنجاح',
         ));
+        emit(const SubscriptionSuccessState(message: 'تم تفعيل الاشتراك 🎉'));
+        _notifySubscriptionUpdated();
         await Future.delayed(const Duration(milliseconds: 500));
         print('Reloading subscriptions after successful payment...');
         await _onLoadSubscriptions(const LoadSubscriptionsEvent(), emit);
@@ -224,6 +230,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
           emit(SubscriptionsEmpty());
         } else {
           int? activeSubscriptionId;
+          String? activeSubscriptionName;
           try {
             print('Fetching user transactions to find active subscription...');
             final transactionsResult = await subscriptionRepository.getMyTransactions(
@@ -240,6 +247,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
                 final activeTransaction = transactionsResponse.activeSubscriptionTransaction;
                 if (activeTransaction != null) {
                   activeSubscriptionId = activeTransaction.purchasableId;
+                  activeSubscriptionName = activeTransaction.purchasableName;
                   print('Active subscription found! ID: $activeSubscriptionId, Status: ${activeTransaction.status.value}, Type: ${activeTransaction.purchasableType}');
                 } else {
                   print('No active subscription transaction found');
@@ -252,8 +260,15 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
 
           print('Marking subscriptions as active. Active subscription ID: $activeSubscriptionId');
           final subscriptionsWithActive = subscriptions.map((subscription) {
-            final isActive = activeSubscriptionId != null && 
-                           subscription.id == activeSubscriptionId;
+            final isActiveById =
+                activeSubscriptionId != null && subscription.id == activeSubscriptionId;
+
+            final normalizedActiveName = (activeSubscriptionName ?? '').trim().toLowerCase();
+            final isActiveByName = normalizedActiveName.isNotEmpty &&
+                (subscription.nameAr.trim().toLowerCase() == normalizedActiveName ||
+                    subscription.nameEn.trim().toLowerCase() == normalizedActiveName);
+
+            final isActive = isActiveById || isActiveByName;
             if (isActive) {
               print('✓ Subscription ${subscription.id} (${subscription.nameAr}) is marked as ACTIVE');
             }
@@ -283,9 +298,14 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
               recommendedIndex = i;
             }
           }
+
+          final activeIndex =
+              subscriptionsWithActive.indexWhere((s) => s.isActive == true);
+
+          final selectedIndex = activeIndex >= 0 ? activeIndex : recommendedIndex;
           emit(SubscriptionsLoaded(
             subscriptions: subscriptionsWithActive,
-            selectedIndex: recommendedIndex,
+            selectedIndex: selectedIndex,
           ));
         }
       },
@@ -749,6 +769,8 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
               purchase: null,
               message: response.dataMessage ?? response.message ?? 'تم تفعيل الاشتراك بنجاح',
             ));
+            emit(const SubscriptionSuccessState(message: 'تم تفعيل الاشتراك 🎉'));
+            _notifySubscriptionUpdated();
             print('Payment completed, reloading subscriptions in 0.5 seconds...');
             Future.delayed(const Duration(milliseconds: 500), () async {
               print('Reloading subscriptions after successful payment...');
@@ -765,6 +787,8 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
                 purchase: response.purchase!,
                 message: response.dataMessage ?? 'تمت عملية الدفع بنجاح',
               ));
+              emit(const SubscriptionSuccessState(message: 'تم تفعيل الاشتراك 🎉'));
+              _notifySubscriptionUpdated();
               print('Payment completed, reloading subscriptions in 0.5 seconds...');
               Future.delayed(const Duration(milliseconds: 500), () async {
                 print('Reloading subscriptions after successful payment...');
@@ -782,6 +806,8 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
                 purchase: null,
                 message: response.dataMessage ?? response.message ?? 'تم تفعيل الاشتراك بنجاح',
               ));
+              emit(const SubscriptionSuccessState(message: 'تم تفعيل الاشتراك 🎉'));
+              _notifySubscriptionUpdated();
               print('Payment completed, reloading subscriptions in 0.5 seconds...');
               Future.delayed(const Duration(milliseconds: 500), () async {
                 print('Reloading subscriptions after successful payment...');
@@ -800,6 +826,11 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
       },
     );
   }
+
+  void _notifySubscriptionUpdated() {
+    globalEventBus.emit(SubscriptionUpdatedEvent());
+  }
+
   @override
   Future<void> close() {
     _paymentTimeoutTimer?.cancel();

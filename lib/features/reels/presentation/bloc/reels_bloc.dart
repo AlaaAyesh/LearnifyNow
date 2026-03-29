@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
+import '../../../../core/events/global_event_bus.dart';
+import '../../../../core/events/subscription_updated_event.dart';
 import '../../data/models/reel_category_model.dart';
 import '../../domain/entities/reel.dart';
 import '../../domain/usecases/get_reels_feed_usecase.dart';
@@ -18,6 +21,7 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
   final GetReelCategoriesUseCase getReelCategoriesUseCase;
   final GetUserReelsUseCase getUserReelsUseCase;
   final GetUserLikedReelsUseCase getUserLikedReelsUseCase;
+  final GlobalEventBus globalEventBus;
 
   int _perPage = 10;
   int? _currentCategoryId;
@@ -28,6 +32,7 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
   int? _currentUserId;
   int _userReelsPage = 1;
   int _userLikedReelsPage = 1;
+  StreamSubscription<SubscriptionUpdatedEvent>? _subscriptionUpdatedListener;
 
   ReelsBloc({
     required this.getReelsFeedUseCase,
@@ -36,6 +41,7 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
     required this.getReelCategoriesUseCase,
     required this.getUserReelsUseCase,
     required this.getUserLikedReelsUseCase,
+    required this.globalEventBus,
   }) : super(const ReelsInitial()) {
     on<LoadReelsFeedEvent>(_onLoadReelsFeed);
     on<LoadMoreReelsEvent>(_onLoadMoreReels);
@@ -50,6 +56,14 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
     on<LoadMoreUserReelsEvent>(_onLoadMoreUserReels);
     on<LoadUserLikedReelsEvent>(_onLoadUserLikedReels);
     on<LoadMoreUserLikedReelsEvent>(_onLoadMoreUserLikedReels);
+
+    _subscriptionUpdatedListener = globalEventBus
+        .on<SubscriptionUpdatedEvent>()
+        .listen((_) {
+      debugPrint('🔥 SubscriptionUpdatedEvent received in ReelsBloc');
+      // Refresh first page only to keep update lightweight.
+      add(LoadReelsFeedEvent(perPage: _perPage, categoryId: _currentCategoryId));
+    });
   }
 
   List<Reel> _filterReelsByCategory(List<Reel> reels, int? categoryId) {
@@ -628,6 +642,12 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
         ));
       },
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await _subscriptionUpdatedListener?.cancel();
+    return super.close();
   }
 }
 

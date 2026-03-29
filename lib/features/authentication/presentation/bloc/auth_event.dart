@@ -87,6 +87,7 @@ class CompleteProfileEvent extends AuthEvent {
 class LogoutEvent extends AuthEvent {}
 
 class CheckAuthStatusEvent extends AuthEvent {}
+class RefreshUserFromApiEvent extends AuthEvent {}
 
 class ForgotPasswordEvent extends AuthEvent {
   final String email;

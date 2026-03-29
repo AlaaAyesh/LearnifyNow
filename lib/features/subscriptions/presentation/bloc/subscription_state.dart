@@ -170,6 +170,17 @@ class PaymentCompleted extends SubscriptionState {
   List<Object?> get props => [purchase, message];
 }
 
+class SubscriptionSuccessState extends SubscriptionState {
+  final String message;
+
+  const SubscriptionSuccessState({
+    this.message = 'تم تفعيل الاشتراك بنجاح',
+  });
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class PaymentFailed extends SubscriptionState {
   final String message;
 

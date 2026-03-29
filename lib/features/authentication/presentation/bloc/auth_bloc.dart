@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/events/global_event_bus.dart';
+import '../../../../core/events/subscription_updated_event.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/login_usecase.dart';
@@ -19,13 +22,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final RegisterUseCase registerUseCase;
   final AuthRepository authRepository;
+  final GlobalEventBus globalEventBus;
 
   String? _resetPasswordEmail;
+  StreamSubscription<SubscriptionUpdatedEvent>? _subscriptionUpdatedListener;
 
   AuthBloc({
     required this.loginUseCase,
     required this.registerUseCase,
     required this.authRepository,
+    required this.globalEventBus,
   }) : super(AuthInitial()) {
     on<LoginEvent>(_onLogin);
     on<RegisterEvent>(_onRegister);
@@ -33,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CompleteProfileEvent>(_onCompleteProfile);
     on<LogoutEvent>(_onLogout);
     on<CheckAuthStatusEvent>(_onCheckAuthStatus);
+    on<RefreshUserFromApiEvent>(_onRefreshUserFromApi);
     on<ForgotPasswordEvent>(_onForgotPassword);
     on<ResetPasswordEvent>(_onResetPassword);
     on<SendEmailOtpEvent>(_onSendEmailOtp);
@@ -45,6 +52,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<NativeGoogleSignInEvent>(_onNativeGoogleSignIn);
     on<NativeAppleSignInEvent>(_onNativeAppleSignIn);
     on<UpdateProfileEvent>(_onUpdateProfile);
+
+    _subscriptionUpdatedListener = globalEventBus
+        .on<SubscriptionUpdatedEvent>()
+        .listen((_) {
+      debugPrint('🔥 SubscriptionUpdatedEvent received in AuthBloc');
+      add(RefreshUserFromApiEvent());
+    });
   }
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -174,6 +188,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               }
             },
           );
+        } else {
+          emit(AuthUnauthenticated());
+        }
+      },
+    );
+  }
+
+  Future<void> _onRefreshUserFromApi(
+    RefreshUserFromApiEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    final result = await authRepository.getCurrentUserWithRetry();
+    await result.fold(
+      (failure) async => emit(AuthError(failure.message)),
+      (user) async {
+        if (user.isProfileComplete) {
+          emit(AuthAuthenticated(user));
+          return;
+        }
+
+        final localDataSource = sl<AuthLocalDataSource>();
+        final token = await localDataSource.getAccessToken();
+        if (token != null && token.isNotEmpty) {
+          emit(SocialLoginNeedsCompletion(
+            email: user.email,
+            name: user.name,
+            providerId: 'existing_user',
+            accessToken: token,
+            requiresRegistration: false,
+          ));
         } else {
           emit(AuthUnauthenticated());
         }
@@ -555,6 +599,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthAuthenticated(user));
       },
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await _subscriptionUpdatedListener?.cancel();
+    return super.close();
   }
 }
 

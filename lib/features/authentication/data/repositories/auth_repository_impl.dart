@@ -240,6 +240,43 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, User>> getCurrentUserFromApi() async {
+    try {
+      final user = await remoteDataSource.getCurrentUser();
+      await localDataSource.cacheUser(user);
+      return Right(user);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('حدث خطأ غير متوقع: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> getCurrentUserWithRetry() async {
+    try {
+      for (int i = 0; i < 3; i++) {
+        final user = await remoteDataSource.getCurrentUser();
+        final isSubscribed =
+            user.isSubscribed || (user.subscriptionExpiryDate?.isNotEmpty ?? false);
+        if (isSubscribed) {
+          await localDataSource.cacheUser(user);
+          return Right(user);
+        }
+        await Future.delayed(const Duration(seconds: 1));
+      }
+
+      final fallbackUser = await remoteDataSource.getCurrentUser();
+      await localDataSource.cacheUser(fallbackUser);
+      return Right(fallbackUser);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('حدث خطأ غير متوقع: $e'));
+    }
+  }
+
+  @override
   Future<Either<Failure, bool>> isLoggedIn() async {
     final result = await localDataSource.isLoggedIn();
     return Right(result);

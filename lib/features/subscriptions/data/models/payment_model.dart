@@ -316,8 +316,25 @@ class TransactionsResponseModel {
   });
 
   factory TransactionsResponseModel.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] as List<dynamic>? ?? [];
-    final meta = json['meta'] as Map<String, dynamic>? ?? {};
+    // API shape can be either:
+    // 1) { data: [..], meta: {..} }
+    // 2) { data: { data: [..], meta: {..} } }
+    // 3) { transactions: [..], meta: {..} }
+    dynamic rawData = json['data'];
+    Map<String, dynamic> meta = (json['meta'] as Map?)?.cast<String, dynamic>() ?? {};
+
+    if (rawData is Map) {
+      // shape #2
+      meta = (rawData['meta'] as Map?)?.cast<String, dynamic>() ?? meta;
+      rawData = rawData['data'];
+    }
+
+    if (rawData == null && json['transactions'] is List) {
+      // shape #3
+      rawData = json['transactions'];
+    }
+
+    final List<dynamic> data = rawData is List ? rawData : <dynamic>[];
 
     return TransactionsResponseModel(
       transactions: data

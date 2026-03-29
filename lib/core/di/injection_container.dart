@@ -72,6 +72,7 @@ import '../network/dio_client.dart';
 import '../storage/hive_service.dart';
 import '../storage/secure_storage_service.dart';
 import '../services/realtime_update_service.dart';
+import '../events/global_event_bus.dart';
 
 final sl = GetIt.instance;
 
@@ -86,6 +87,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => HiveService());
   sl.registerLazySingleton(() => DioClient(sl()));
   sl.registerLazySingleton(() => RealtimeUpdateService());
+  sl.registerLazySingleton(() => GlobalEventBus());
 
   _initAuth();
   _initCertificates();
@@ -128,6 +130,7 @@ void _initAuth() {
       loginUseCase: sl(),
       registerUseCase: sl(),
       authRepository: sl(),
+      globalEventBus: sl(),
     ),
   );
 }
@@ -201,6 +204,7 @@ void _initSubscriptions() {
       updateSubscriptionUseCase: sl(),
       subscriptionRepository: sl(),
       verifyIapReceiptUseCase: sl(),
+      globalEventBus: sl(),
     ),
   );
 }
@@ -225,6 +229,7 @@ void _initCourses() {
       getCoursesUseCase: sl(),
       getCourseByIdUseCase: sl(),
       getMyCoursesUseCase: sl(),
+      globalEventBus: sl(),
     ),
   );
 }
@@ -297,6 +302,7 @@ void _initReels() {
       getReelCategoriesUseCase: sl(),
       getUserReelsUseCase: sl(),
       getUserLikedReelsUseCase: sl(),
+      globalEventBus: sl(),
     ),
   );
 }

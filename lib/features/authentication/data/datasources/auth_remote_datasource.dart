@@ -27,6 +27,7 @@ abstract class AuthRemoteDataSource {
     required String newPassword,
     required String passwordConfirmation,
   });
+  Future<UserModel> getCurrentUser();
 
   Future<String> getGoogleAuthUrl();
 
@@ -256,6 +257,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on DioException catch (e) {
       throw ServerException(
         message: e.response?.data['message'] ?? 'كلمة المرور الحالية غير صحيحة',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
+  @override
+  Future<UserModel> getCurrentUser() async {
+    try {
+      final response = await dioClient.get(ApiConstants.profile);
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        if (data is Map<String, dynamic>) {
+          return UserModel.fromJson(data);
+        }
+      }
+      throw ServerException(
+        message: response.data['message'] ?? 'فشل تحميل بيانات المستخدم',
+        statusCode: response.statusCode,
+      );
+    } on DioException catch (e) {
+      throw ServerException(
+        message: e.response?.data['message'] ?? 'خطأ في تحميل بيانات المستخدم',
         statusCode: e.response?.statusCode,
       );
     }
