@@ -11,6 +11,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../../../../core/widgets/custom_background.dart';
 import '../../../authentication/domain/entities/user.dart';
+import '../../../authentication/domain/repositories/auth_repository.dart';
 import '../../../authentication/presentation/bloc/auth_bloc.dart';
 import '../../../authentication/presentation/bloc/auth_event.dart';
 import '../../../authentication/presentation/bloc/auth_state.dart';
@@ -373,6 +374,26 @@ class _AuthenticatedProfilePageState extends State<_AuthenticatedProfilePage> {
     return '$countryCode$localNumber';
   }
 
+  Future<void> _refreshProfile() async {
+    final result = await sl<AuthRepository>().getCurrentUserFromApi();
+    if (!mounted) return;
+    result.fold(
+      (failure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(failure.message),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      },
+      (user) {
+        context.read<AuthBloc>().add(CheckAuthStatusEvent());
+        _populateUserData(user);
+        setState(() {});
+      },
+    );
+  }
+
   void onSave() {
     if (formKey.currentState!.validate()) {
       String? normalizedPhone;
@@ -459,91 +480,96 @@ class _AuthenticatedProfilePageState extends State<_AuthenticatedProfilePage> {
     return Stack(
       children: [
         const CustomBackground(),
-        SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                SizedBox(height: 24),
+        RefreshIndicator(
+          color: AppColors.primary,
+          onRefresh: _refreshProfile,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  SizedBox(height: 24),
 
-                _buildProfileAvatar(user),
-                SizedBox(height: 16),
+                  _buildProfileAvatar(user),
+                  SizedBox(height: 16),
 
-                Text(
-                  user.name,
-                  style: AppTextStyles.displayMedium,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  user.email,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: isTabletPortrait
-                        ? Responsive.spacing(context, 13)
-                        : Responsive.spacing(context, 18),
+                  Text(
+                    user.name,
+                    style: AppTextStyles.displayMedium,
                   ),
-                ),
-                SizedBox(height: 8),
+                  SizedBox(height: 4),
+                  Text(
+                    user.email,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: isTabletPortrait
+                          ? Responsive.spacing(context, 13)
+                          : Responsive.spacing(context, 18),
+                    ),
+                  ),
+                  SizedBox(height: 8),
 
-                _buildSubscriptionBadge(user),
-                SizedBox(height: 32),
+                  _buildSubscriptionBadge(user),
+                  SizedBox(height: 32),
 
-                NameField(controller: nameController),
-                SizedBox(height: 16),
+                  NameField(controller: nameController),
+                  SizedBox(height: 16),
 
-                PhoneField(
-                  controller: phoneController,
-                  countryCode: countryCode,
-                  onCountryChanged: (v) => setState(() => countryCode = v),
-                ),
-                SizedBox(height: 16),
+                  PhoneField(
+                    controller: phoneController,
+                    countryCode: countryCode,
+                    onCountryChanged: (v) => setState(() => countryCode = v),
+                  ),
+                  SizedBox(height: 16),
 
-                BirthdayField(
-                  dayController: dayController,
-                  monthController: monthController,
-                  yearController: yearController,
-                  validator: (value) {
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
+                  BirthdayField(
+                    dayController: dayController,
+                    monthController: monthController,
+                    yearController: yearController,
+                    validator: (value) {
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16),
 
-                _buildSectionTitle('تغيير كلمة المرور'),
-                SizedBox(height: 16),
+                  _buildSectionTitle('تغيير كلمة المرور'),
+                  SizedBox(height: 16),
 
-                PasswordField(
-                  controller: passwordController,
-                  obscure: obscurePassword,
-                  hintText: 'كلمة المرور الجديدة',
-                  validator: (v) => null,
-                  onToggleVisibility: () =>
-                      setState(() => obscurePassword = !obscurePassword),
-                ),
-                SizedBox(height: 16),
+                  PasswordField(
+                    controller: passwordController,
+                    obscure: obscurePassword,
+                    hintText: 'كلمة المرور الجديدة',
+                    validator: (v) => null,
+                    onToggleVisibility: () =>
+                        setState(() => obscurePassword = !obscurePassword),
+                  ),
+                  SizedBox(height: 16),
 
-                PasswordField(
-                  controller: confirmPasswordController,
-                  obscure: obscureConfirmPassword,
-                  hintText: 'تأكيد كلمة المرور',
-                  validator: (v) {
-                    if (passwordController.text.isNotEmpty &&
-                        v != passwordController.text) {
-                      return 'كلمة المرور غير متطابقة';
-                    }
-                    return null;
-                  },
-                  onToggleVisibility: () => setState(
-                      () => obscureConfirmPassword = !obscureConfirmPassword),
-                ),
-                SizedBox(height: 32),
+                  PasswordField(
+                    controller: confirmPasswordController,
+                    obscure: obscureConfirmPassword,
+                    hintText: 'تأكيد كلمة المرور',
+                    validator: (v) {
+                      if (passwordController.text.isNotEmpty &&
+                          v != passwordController.text) {
+                        return 'كلمة المرور غير متطابقة';
+                      }
+                      return null;
+                    },
+                    onToggleVisibility: () => setState(
+                        () => obscureConfirmPassword = !obscureConfirmPassword),
+                  ),
+                  SizedBox(height: 32),
 
-                PrimaryButton(
-                  text: 'حفظ التعديلات',
-                  onPressed: onSave,
-                ),
-                SizedBox(height: 40),
-              ],
+                  PrimaryButton(
+                    text: 'حفظ التعديلات',
+                    onPressed: onSave,
+                  ),
+                  SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),
