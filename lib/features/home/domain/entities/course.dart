@@ -92,7 +92,7 @@ class Course extends Equatable {
       if (introBunnyUri!.contains('thumbnail')) {
         return introBunnyUri;
       }
-      return '${introBunnyUri}/thumbnail.jpg';
+      return '$introBunnyUri/thumbnail.jpg';
     }
 
     for (final chapter in chapters) {
@@ -104,7 +104,7 @@ class Course extends Equatable {
           if (lesson.bunnyUri!.contains('thumbnail')) {
             return lesson.bunnyUri;
           }
-          return '${lesson.bunnyUri}/thumbnail.jpg';
+          return '${lesson.bunnyUri!}/thumbnail.jpg';
         }
       }
     }

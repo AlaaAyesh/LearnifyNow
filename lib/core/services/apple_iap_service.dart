@@ -184,8 +184,6 @@ class AppleIAPService {
   }
 
   Future<void> purchaseProduct(ProductDetails productDetails) async {
-    final displayName =
-        getDisplayName(productDetails.id, productDetails.title);
     debugPrint('Apple IAP starting purchase: ${productDetails.id}');
 
     final purchaseParam = PurchaseParam(
