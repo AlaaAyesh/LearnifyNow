@@ -1,0 +1,32 @@
+{
+  "project": "LearnifyNow",
+  "platform": "ios",
+  "github": {
+    "owner": "AlaaAyesh",
+    "repo": "LearnifyNow"
+  },
+  "ios": {
+    "path": "ios",
+    "scheme": "Runner",
+    "signing": false
+  },
+  "mobai": {
+    "url": "http://localhost:8686",
+    "device_id": ""
+  },
+  "flutter": {
+    "watch": {
+      "dirs": [
+        "lib"
+      ],
+      "patterns": [
+        ".dart"
+      ],
+      "ignore": [
+        ".g.dart",
+        ".freezed.dart"
+      ],
+      "debounce": 100
+    }
+  }
+}
