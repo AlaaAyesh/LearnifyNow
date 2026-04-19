@@ -8,7 +8,7 @@
   "ios": {
     "path": "ios",
     "scheme": "Runner",
-    "configuration": "Release"
+    "configuration": "Debug"
   },
   "flutter": {}
 }
