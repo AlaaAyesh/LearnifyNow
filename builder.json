@@ -1,0 +1,16 @@
+{
+  "project": "LearnifyNow",
+  "platform": "ios",
+  "github": {
+    "owner": "AlaaAyesh",
+    "repo": "LearnifyNow"
+  },
+  "ios": {
+    "path": "ios",
+    "scheme": "Runner",
+    "configuration": "Debug"
+  },
+  "flutter": {
+    "version": "3.41.3"
+  }
+}
