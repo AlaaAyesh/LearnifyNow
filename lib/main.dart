@@ -11,8 +11,12 @@ import 'core/network/cache_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
+  try {
+    await Firebase.initializeApp();
+    await FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
+  } catch (e) {
+    debugPrint("Firebase initialization failed: $e");
+  }
 
   await Future.wait([
     HiveService.init(),
