@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 import 'app.dart';
 import 'core/di/injection_container.dart';
@@ -11,7 +11,7 @@ import 'core/network/cache_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
+  /* try {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
         apiKey: 'AIzaSyDummyKeyForTestingPurposesOnly',
@@ -24,7 +24,7 @@ void main() async {
     await FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
   } catch (e) {
     debugPrint("Firebase initialization failed: $e");
-  }
+  } */
 
   await Future.wait([
     HiveService.init(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/di/injection_container.dart';
@@ -35,9 +35,9 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Future<void> _initPushNotifications() async {
-    await FirebaseMessaging.instance.requestPermission();
-    final token = await FirebaseMessaging.instance.getToken();
-    debugPrint('TOKEN: $token');
+    // await FirebaseMessaging.instance.requestPermission();
+    // final token = await FirebaseMessaging.instance.getToken();
+    // debugPrint('TOKEN: $token');
   }
 
   void _initAnimation() {
