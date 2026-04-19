@@ -10,7 +10,5 @@
     "scheme": "Runner",
     "configuration": "Debug"
   },
-  "flutter": {
-    "version": "3.41.3"
-  }
+  "flutter": {}
 }
