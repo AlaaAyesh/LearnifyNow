@@ -12,7 +12,15 @@ import 'core/network/cache_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyDummyKeyForTestingPurposesOnly',
+        appId: '1:123456789012:ios:abcdef1234567890',
+        messagingSenderId: '123456789012',
+        projectId: 'dummy-project-id',
+        iosBundleId: 'com.example.learnifyLms',
+      ),
+    );
     await FirebaseInAppMessaging.instance.setAutomaticDataCollectionEnabled(true);
   } catch (e) {
     debugPrint("Firebase initialization failed: $e");
