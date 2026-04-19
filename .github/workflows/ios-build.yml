@@ -7,26 +7,6 @@ on:
         description: "Unique build identifier"
         required: true
         type: string
-      ios_path:
-        description: "Unused (kept for builder compatibility)"
-        required: false
-        type: string
-        default: "ios"
-      scheme:
-        description: "Unused (kept for builder compatibility)"
-        required: false
-        type: string
-        default: "Runner"
-      use_signing:
-        description: "Unused (kept for builder compatibility)"
-        required: false
-        type: boolean
-        default: false
-      configuration:
-        description: "Unused (kept for builder compatibility)"
-        required: false
-        type: string
-        default: "Release"
       flutter_version:
         description: "Flutter version to use (empty = latest stable)"
         required: false
