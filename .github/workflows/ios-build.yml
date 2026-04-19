@@ -75,6 +75,9 @@ jobs:
           cd "$IOS_PATH"
           if [ -f "Podfile" ]; then
             rm -f Podfile.lock
+            # Fix CRLF issues
+            tr -d '\r' < Podfile > Podfile.new && mv Podfile.new Podfile
+            
             # Force platform to 14.0 in Podfile
             sed -i '' 's/^# platform :ios/platform :ios/' Podfile || true
             sed -i '' "s/platform :ios, '[^']*'/platform :ios, '14.0'/" Podfile || true
