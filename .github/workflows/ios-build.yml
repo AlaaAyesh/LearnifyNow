@@ -77,16 +77,6 @@ jobs:
             rm -f Podfile.lock
             # Fix CRLF issues
             tr -d '\r' < Podfile > Podfile.new && mv Podfile.new Podfile
-            
-            # Force platform to 14.0 in Podfile
-            sed -i '' 's/^# platform :ios/platform :ios/' Podfile || true
-            sed -i '' "s/platform :ios, '[^']*'/platform :ios, '14.0'/" Podfile || true
-            
-            # Force IPHONEOS_DEPLOYMENT_TARGET in project
-            find . -name "project.pbxproj" -exec sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [^;]*/IPHONEOS_DEPLOYMENT_TARGET = 14.0/g' {} +
-            
-            pod repo update
-            pod install
           fi
 
           DERIVED_DATA_PATH="${GITHUB_WORKSPACE}/DerivedData"
