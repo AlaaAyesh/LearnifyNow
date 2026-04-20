@@ -1,0 +1,100 @@
+Warning: Building for device with codesigning disabled. You will have to manually codesign before deploying to device.
+Building com.example.learnifyLms for device (ios)...
+Finished migration to UIScene lifecycle. See https://flutter.dev/to/uiscene-migration for details.
+Running pod install...                                            112.2s
+CocoaPods' output:
+↳
+      Preparing
+
+    Analyzing dependencies
+
+    Inspecting targets to integrate
+      Using `ARCHS` setting to build architectures of target `Pods-Runner`: (``)
+      Using `ARCHS` setting to build architectures of target `Pods-RunnerTests`: (``)
+
+    Fetching external sources
+    -> Fetching podspec for `Flutter` from `Flutter`
+    -> Fetching podspec for `better_player_plus` from `.symlinks/plugins/better_player_plus/ios`
+    -> Fetching podspec for `flutter_secure_storage` from `.symlinks/plugins/flutter_secure_storage/ios`
+    -> Fetching podspec for `google_sign_in_ios` from `.symlinks/plugins/google_sign_in_ios/darwin`
+    -> Fetching podspec for `in_app_purchase_storekit` from `.symlinks/plugins/in_app_purchase_storekit/darwin`
+    -> Fetching podspec for `package_info_plus` from `.symlinks/plugins/package_info_plus/ios`
+    -> Fetching podspec for `path_provider_foundation` from `.symlinks/plugins/path_provider_foundation/darwin`
+    -> Fetching podspec for `shared_preferences_foundation` from `.symlinks/plugins/shared_preferences_foundation/darwin`
+    -> Fetching podspec for `sign_in_with_apple` from `.symlinks/plugins/sign_in_with_apple/ios`
+    -> Fetching podspec for `sqflite_darwin` from `.symlinks/plugins/sqflite_darwin/darwin`
+    -> Fetching podspec for `url_launcher_ios` from `.symlinks/plugins/url_launcher_ios/ios`
+    -> Fetching podspec for `video_player_avfoundation` from `.symlinks/plugins/video_player_avfoundation/darwin`
+    -> Fetching podspec for `wakelock_plus` from `.symlinks/plugins/wakelock_plus/ios`
+    -> Fetching podspec for `webview_flutter_wkwebview` from `.symlinks/plugins/webview_flutter_wkwebview/darwin`
+
+    Resolving dependencies of `Podfile`
+
+    Adding spec repo `trunk` with CDN `https://cdn.cocoapods.org/`
+      CDN: trunk Relative path downloaded: CocoaPods-version.yml, save ETag: "69e68778-38"
+      CDN: trunk Relative path: CocoaPods-version.yml exists! Returning local because checking is only performed in repo update
+      CDN: trunk URL couldn't be downloaded: https://cdn.cocoapods.org/all_pods_versions_4_2_c.txt Response: Timeout was reached, retries: 4
+      CDN: trunk URL couldn't be downloaded: https://cdn.cocoapods.org/all_pods_versions_4_2_c.txt Response: Timeout was reached, retries: 3
+      CDN: trunk URL couldn't be downloaded: https://cdn.cocoapods.org/all_pods_versions_4_2_c.txt Response: Timeout was reached, retries: 2
+      CDN: trunk URL couldn't be downloaded: https://cdn.cocoapods.org/all_pods_versions_4_2_c.txt Response: Timeout was reached, retries: 1
+    [!] CDN: trunk URL couldn't be downloaded: https://cdn.cocoapods.org/all_pods_versions_4_2_c.txt Response: Timeout was reached
+
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:413:in `block in download_and_save_with_retries_async'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:408:in `apply'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:1216:in `apply'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:1740:in `block (2 levels) in on_resolvable'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:1593:in `evaluate_to'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:1740:in `block in on_resolvable'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/executor/ruby_thread_pool_executor.rb:382:in `run_task'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/executor/ruby_thread_pool_executor.rb:372:in `block (3 levels) in create_worker'
+    <internal:kernel>:187:in `loop'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/executor/ruby_thread_pool_executor.rb:361:in `block (2 levels) in create_worker'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/executor/ruby_thread_pool_executor.rb:358:in `catch'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/executor/ruby_thread_pool_executor.rb:358:in `block in create_worker'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:1268:in `raise'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:1268:in `wait_until_resolved!'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/concurrent-ruby-1.3.6/lib/concurrent-ruby/concurrent/promises.rb:988:in `wait!'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:344:in `download_file'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:285:in `ensure_versions_file_loaded'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:209:in `search'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/aggregate.rb:83:in `block in search'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/aggregate.rb:83:in `select'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/aggregate.rb:83:in `search'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:416:in `create_set_from_sources'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:385:in `find_cached_set'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:360:in `specifications_for_dependency'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:165:in `search_for'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:274:in `block in sort_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:267:in `each'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:267:in `sort_by'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:267:in `sort_by!'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:267:in `sort_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb:60:in `block in sort_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb:77:in `with_no_such_dependency_error_handling'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb:59:in `sort_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:754:in `push_state_for_requirements'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:744:in `require_nested_dependencies_for'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:727:in `activate_new_spec'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:684:in `attempt_to_activate'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:254:in `process_topmost_state'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb:182:in `resolve'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/molinillo-0.8.0/lib/molinillo/resolver.rb:43:in `resolve'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb:94:in `resolve'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:1082:in `block in resolve_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb:64:in `section'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:1080:in `resolve_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:125:in `analyze'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:422:in `analyze'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:244:in `block in resolve_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb:64:in `section'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:243:in `resolve_dependencies'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:162:in `install!'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/command/install.rb:52:in `run'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/claide-1.1.0/lib/claide/command.rb:334:in `run'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:52:in `run'
+    /opt/homebrew/lib/ruby/gems/3.3.0/gems/cocoapods-1.16.2/bin/pod:55:in `<top (required)>'
+    /opt/homebrew/lib/ruby/site_ruby/3.3.0/rubygems.rb:305:in `load'
+    /opt/homebrew/lib/ruby/site_ruby/3.3.0/rubygems.rb:305:in `activate_and_load_bin_path'
+    /opt/homebrew/lib/ruby/gems/3.3.0/bin/pod:25:in `<main>'
+
+Error running pod install
